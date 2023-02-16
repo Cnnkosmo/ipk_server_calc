@@ -6,6 +6,7 @@
 #include <netinet/in.h>
 #include <string.h>
 #include <arpa/inet.h>
+#include <stdio.h>
 
 #define PORT 8080
 

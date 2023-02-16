@@ -11,6 +11,9 @@
 
 int main(int argc, char const *argv[])
 {
+    if(argc < 7){
+        fprintf(stderr,"not enought arguments\n");
+    }
     int sock = 0; long valread;
     struct sockaddr_in serv_addr;
     char *hello = "Hello from client";

@@ -1,0 +1,3 @@
+/home/rtk/Documents/ipk23/cmake-build-debug/CMakeFiles/ipk23.dir
+/home/rtk/Documents/ipk23/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/rtk/Documents/ipk23/cmake-build-debug/CMakeFiles/rebuild_cache.dir

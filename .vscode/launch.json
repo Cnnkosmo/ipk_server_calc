@@ -1,0 +1,10 @@
+{
+    "name": "C Launch",
+    "type": "cppdbg",
+    "request": "launch",
+    "program": "${workspaceFolder}/a.out",
+    "args": ["127.0.0.1", "8080"],
+    "environment": [{ "name": "config", "value": "Debug" }],
+    "cwd": "${workspaceFolder}"
+  }
+  

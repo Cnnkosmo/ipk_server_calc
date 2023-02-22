@@ -16,61 +16,32 @@ void error(const char *msg)
 }
 
 int main(int argc, char *argv[]){
-
-    int sockfd, portno, n;
-    struct sockaddr_in serv_addr;
-    struct hostent *server;
-    
-    char buffer[SIZE_BUF];
-    if(argc < 3){
-        fprintf(stderr, "usage %s hostname port\n", argv[0]);
-        exit(1);
+    const char buffer[BUFSIZ];
+    int client_socket = socket(AF_INET, SOCK_DGRAM, 0);
+    if(client_socket <= 0){
+        perror("ERROR: socket");
+        exit(EXIT_FAILURE);
     }
-    portno = atoi(argv[2]);
-    sockfd = socket(AF_INET, SOCK_STREAM, 0);
-    if(sockfd < 0){
-        // error("error opening socket\n");
-        printf("error opening socket\n");
-    }
-    server = gethostbyname(argv[1]);
+    struct hostent *server = gethostbyname(argv[1]);
     if (server == NULL)
     {
-        fprintf(stderr,"server not responding, or no such host\n");
-        printf("server not responding, or no such host\n");
+        fprintf(stderr, "ERROR: no such host %s\n", argv[1]);
+        exit(EXIT_FAILURE);
     }
-    
-    bzero((char *) &serv_addr, sizeof(serv_addr));
-    serv_addr.sin_family = AF_INET;
-    bcopy((char *) server->h_addr_list[0] , (char *) &serv_addr.sin_addr.s_addr, server->h_length);
-    serv_addr.sin_port = htons(portno);
-    if(connect(sockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr))<0)
-    {
-        // error("connection failed");
-        printf("connection failed\n");
-    };
-    while (1)
-    {
-        bzero(buffer, SIZE_BUF);
-        fgets(buffer, SIZE_BUF, stdin);
-        n = write(sockfd, buffer, strlen(buffer));
-        if(n < 0){
-            // error("error while writing");
-            printf("error while writing\n");
-        }
-        bzero(buffer, SIZE_BUF);
-        n = read(sockfd, buffer, SIZE_BUF);
-        if(n < 0){
-            // error("error while reading");
-            printf("error while reading\n");
-        }
-        printf("Server: %s", buffer);
-        int i = strncmp("Bye", buffer, 3);
-        if(i == 0){
-            printf("bye detected");
-            // break;
-    }
-    
-    close(sockfd);
-    return 0;
-}
+    struct sockaddr_in server_address;
+    memset(&server_address, 0, sizeof(server_address));
+
+    server_address.sin_family = AF_INET;
+    server_address.sin_port = htons(argv[2]);
+
+    memcpy(&server_address.sin_addr.s_addr, server->h_name, server->h_length);
+    struct sockaddr *addr = (struct sockaddr*) &argv[1];
+    int addr_size = sizeof(argv[1]);
+    struct sockaddr *addres = (struct sockaddr *) &server_address;
+    int adress_size = sizeof(server_address);
+    int bytes_tx = sendto(client_socket, buffer, strlen(buffer), 0, addr, addr_size);
+    if(bytes_tx < 0) perror("ERROR: sendto");
+
+    int bytes_rx = recvfrom(client_socket, buffer, BUFSIZ, 0, addr, &argv[1]);
+    if(bytes_rx < 0) perror("ERROR: recvfrom"); 
 }
